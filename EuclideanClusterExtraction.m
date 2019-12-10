@@ -10,17 +10,17 @@ function flag = EuclideanClusterExtraction(Pts, bandWidth, numNeighbours, maxIte
 PtsSz = length(Pts);
 kdtreeobj = KDTreeSearcher(Pts,'distance','euclidean');
 [n,dis] = knnsearch(kdtreeobj,Pts,'k',(numNeighbours+1));
-n = n(:,2:numNeighbours+1);
-dis = dis(:,2:numNeighbours+1);
-radius_idx = dis < bandWidth;
-n = n.*radius_idx;
-clear radius_idx dis Pts;
+n = n(:,2:numNeighbours+1);%index
+dis = dis(:,2:numNeighbours+1);%distance
+radius_idx = dis < bandWidth;%逻辑矩阵
+n = n.*radius_idx;%只保留在阈值范围内的index
 % 生成与原始数据大小对应的标签数组
+
 flag = zeros(PtsSz,1);
 iter = 1;
 while(1)
     % 生成随机种子点
-    iterIdx = fix(PtsSz*rand(1));
+    iterIdx = fix(PtsSz*rand(1));%fix朝零四舍五入
     % 如果种子点等于0，则重新生成
     while(iterIdx<1)
         iterIdx = fix(PtsSz*rand(1));
@@ -33,7 +33,7 @@ while(1)
     % 找到该点的邻域点中满足聚类要求的点
     flag(n(iterIdx,n(iterIdx,:)>0)) = iter;
     % 去除已经被标记的点在原始数据中的位置
-    loc = find(flag==iter);
+    loc = find(flag==iter);%flag中等于iter元素的索引
     lastlocSz = length(loc);
     % 开始区域增长
     while(1)
